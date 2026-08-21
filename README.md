@@ -1,4 +1,18 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Lanka Tool Hire Portal (Pvt) Ltd
+
+A modern, responsive tool-hire review and rental web portal prototype developed with **Next.js 16**, **React 19**, **Tailwind CSS**, and **Sequelize**.
+
+---
+
+## 👥 Project Team: Team 01
+
+| Student Name | Student ID (CB Number) | Role |
+| :--- | :--- | :--- |
+| **Mohomed Shadil** | `CB018738` | Full-Stack Developer |
+| **Abdullah Suhail** | `CB010327` | Full-Stack Developer |
+| **Hashan Lakshitha Walauwatta** | `CB018777` | Full-Stack Developer |
+
+---
 
 ## Getting Started
 
