@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/* Force light color-scheme so browser form controls don't invert to
+   dark-mode defaults (which was making typed text invisible - white
+   text on a white input background). */
+html {
+  color-scheme: light;
+}
+
+input,
+textarea,
+select {
+  color: #22261F;
+  background-color: #FFFFFF;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6B6759;
+  opacity: 1;
+}
