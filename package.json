@@ -1,0 +1,33 @@
+{
+  "name": "lanka-tool-hire-portal",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "i18next": "^26.3.6",
+    "lucide-react": "^1.31.0",
+    "mysql2": "^3.23.1",
+    "next": "16.2.11",
+    "next-auth": "^4.24.15",
+    "nodemailer": "^7.0.13",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-i18next": "^17.0.11",
+    "recharts": "^3.10.1",
+    "sequelize": "^6.37.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.11",
+    "sequelize-cli": "^6.6.5",
+    "tailwindcss": "^4"
+  }
+}
