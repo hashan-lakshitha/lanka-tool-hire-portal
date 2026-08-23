@@ -45,3 +45,12 @@ next-env.d.ts
 *.docx
 *.pdf
 *.txt
+
+# ai & agent configs
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.agents/
+.cursor/
+.windsurf/
+.claude/
