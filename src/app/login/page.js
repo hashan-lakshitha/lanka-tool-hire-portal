@@ -21,11 +21,7 @@ function LoginForm() {
   useEffect(() => {
     if (searchParams.get('registered') === 'true') {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-<<<<<<< Updated upstream
       setSuccess(t('auth.registrationSuccess', 'Registration successful! Please sign in below.'));
-=======
-      setSuccess('Registration successful! Please sign in below.');
->>>>>>> Stashed changes
     }
   }, [searchParams, t]);
 
