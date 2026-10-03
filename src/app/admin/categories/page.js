@@ -56,11 +56,18 @@ export default function CategoriesPage() {
     fetchCategories();
   }
 
-  async function deleteCategory(id, name) {
-    const confirmed = window.confirm(`Delete category "${name}"? Tools in this category will become uncategorised.`);
-    if (!confirmed) return;
+  async function deleteCategory(cat) {
     setError(null);
-    const res = await fetch(`/api/admin/categories/${id}`, { method: 'DELETE' });
+    if (cat.toolCount > 0) {
+      setError(
+        `"${cat.name}" still has ${cat.toolCount} tool${cat.toolCount === 1 ? '' : 's'}. ` +
+        'Move them to another category (Equipment → Edit → Category) or delete them before deleting this category.'
+      );
+      return;
+    }
+    const confirmed = window.confirm(`Delete category "${cat.name}"? This cannot be undone.`);
+    if (!confirmed) return;
+    const res = await fetch(`/api/admin/categories/${cat.id}`, { method: 'DELETE' });
     if (!res.ok) {
       const data = await res.json();
       setError(data.error);
@@ -140,6 +147,7 @@ export default function CategoriesPage() {
                       onClick={() => saveRename(cat.id)}
                       className="rounded-md bg-[#3498db] p-1.5 text-white hover:bg-[#2980b9]"
                       title="Save"
+                      aria-label={`Save name for ${cat.name}`}
                     >
                       <Check size={14} />
                     </button>
@@ -147,6 +155,7 @@ export default function CategoriesPage() {
                       onClick={() => setEditingId(null)}
                       className="rounded-md bg-gray-200 p-1.5 text-gray-600 hover:bg-gray-300"
                       title="Cancel"
+                      aria-label="Cancel rename"
                     >
                       <X size={14} />
                     </button>
@@ -157,13 +166,15 @@ export default function CategoriesPage() {
                       onClick={() => { setEditingId(cat.id); setEditName(cat.name); }}
                       className="rounded-md bg-gray-100 p-1.5 text-gray-600 hover:bg-gray-200"
                       title="Rename"
+                      aria-label={`Rename ${cat.name}`}
                     >
                       <Pencil size={14} />
                     </button>
                     <button
-                      onClick={() => deleteCategory(cat.id, cat.name)}
+                      onClick={() => deleteCategory(cat)}
                       className="rounded-md bg-rose-50 p-1.5 text-rose-500 hover:bg-rose-100"
                       title="Delete"
+                      aria-label={`Delete ${cat.name}`}
                     >
                       <Trash2 size={14} />
                     </button>

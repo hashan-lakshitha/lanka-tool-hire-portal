@@ -6,8 +6,11 @@ import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { ShoppingBag, LayoutDashboard, User, LogIn, UserPlus, LogOut } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 
 export default function Nav() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const pathname = usePathname();
 
@@ -25,12 +28,12 @@ export default function Nav() {
           <LanguageSwitcher />
           <Link href="/catalogue" className="flex items-center gap-1.5 text-sm font-medium text-gray-200 hover:text-white transition-colors">
             <ShoppingBag size={16} />
-            Catalogue
+            {t('nav.catalogue', 'Catalogue')}
           </Link>
           {session?.user?.userType === 'admin' && (
             <Link href="/admin" className="flex items-center gap-1.5 text-sm font-medium text-gray-200 hover:text-white transition-colors">
               <LayoutDashboard size={16} />
-              Admin
+              {t('nav.admin', 'Admin')}
             </Link>
           )}
           {status === 'loading' ? null : session ? (
@@ -38,7 +41,7 @@ export default function Nav() {
               {session.user.userType === 'customer' && (
                 <Link href="/dashboard" className="flex items-center gap-1.5 text-sm font-medium text-gray-200 hover:text-white transition-colors">
                   <LayoutDashboard size={16} />
-                  Dashboard
+                  {t('nav.dashboard', 'Dashboard')}
                 </Link>
               )}
               <Link href="/profile" className="flex items-center gap-1.5 text-sm font-medium text-gray-200 hover:text-white transition-colors">
@@ -50,21 +53,21 @@ export default function Nav() {
                 className="flex items-center gap-1.5 rounded-md bg-[#3498db] px-3 py-1.5 text-xs font-semibold text-white shadow hover:bg-[#2980b9] transition-colors"
               >
                 <LogOut size={14} />
-                Sign Out
+                {t('nav.signOut', 'Sign Out')}
               </button>
             </>
           ) : (
             <>
               <Link href="/login" className="flex items-center gap-1.5 text-sm font-medium text-gray-200 hover:text-white transition-colors">
                 <LogIn size={16} />
-                Sign In
+                {t('nav.signIn', 'Sign In')}
               </Link>
               <Link
                 href="/register"
                 className="flex items-center gap-1.5 rounded-md bg-[#3498db] px-4 py-2 text-sm font-semibold text-white shadow hover:bg-[#2980b9] transition-colors"
               >
                 <UserPlus size={16} />
-                Register
+                {t('nav.register', 'Register')}
               </Link>
             </>
           )}

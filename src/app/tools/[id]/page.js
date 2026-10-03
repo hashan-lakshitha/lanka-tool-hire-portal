@@ -9,6 +9,7 @@ import ReviewForm from '@/components/ReviewForm';
 import ReviewList from '@/components/ReviewList';
 import { ChevronRight, ImageOff, Clock, CalendarDays, CalendarRange, Star, MessageSquare, ArrowLeft, Loader2 } from 'lucide-react';
 import '@/lib/i18n';
+import { translateCategoryName } from '@/lib/categoryName';
 
 export default function ToolDetailPage() {
   const { t } = useTranslation();
@@ -67,7 +68,7 @@ export default function ToolDetailPage() {
             {t('toolDetail.backToCatalogue', 'Catalogue')}
           </Link>
           <ChevronRight size={14} />
-          <span>{tool.category?.name}</span>
+          <span>{translateCategoryName(t, tool.category?.name)}</span>
           <ChevronRight size={14} />
           <span className="text-[#34495e] font-medium">{tool.name}</span>
         </nav>

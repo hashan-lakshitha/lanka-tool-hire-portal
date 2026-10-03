@@ -6,7 +6,7 @@ import { computeOverallRating } from '@/lib/rating';
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const categoryId = searchParams.get('categoryId');
-  const search = searchParams.get('search');
+  const search = (searchParams.get('search') || '').trim();
   const sortBy = searchParams.get('sortBy') || 'name';
   const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
   const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '12', 10)));
@@ -14,9 +14,11 @@ export async function GET(request) {
   const where = { status: 'active' };
   if (categoryId) where.categoryId = categoryId;
   if (search) {
+    // Escape LIKE wildcards so "%" and "_" are matched literally (MySQL's default escape char is "\").
+    const escaped = search.replace(/[\\%_]/g, (ch) => `\\${ch}`);
     where[Op.or] = [
-      { name: { [Op.like]: `%${search}%` } },
-      { description: { [Op.like]: `%${search}%` } },
+      { name: { [Op.like]: `%${escaped}%` } },
+      { description: { [Op.like]: `%${escaped}%` } },
     ];
   }
 
