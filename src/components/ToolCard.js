@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Star, Banknote, ImageOff } from 'lucide-react';
 import '@/lib/i18n';
+import { translateCategoryName } from '@/lib/categoryName';
 
 export default function ToolCard({ tool }) {
   const { t } = useTranslation();
@@ -34,7 +35,7 @@ export default function ToolCard({ tool }) {
 
         <div className="p-4">
           <p className="text-xs font-semibold text-[#3498db] uppercase tracking-wider mb-1">
-            {tool.category?.name || t('toolCard.uncategorised', 'Uncategorised')}
+            {translateCategoryName(t, tool.category?.name) || t('toolCard.uncategorised', 'Uncategorised')}
           </p>
 
           <h3 className="text-base font-bold text-[#34495e] mb-2 line-clamp-1 group-hover:text-[#3498db] transition-colors">
@@ -55,13 +56,13 @@ export default function ToolCard({ tool }) {
         </div>
       </div>
 
-      <div className="px-4 pb-4 flex items-center justify-between">
-        <span className="inline-flex items-center gap-1 bg-[#3498db] text-white font-semibold text-xs px-3 py-1.5 rounded shadow-sm">
-          <Banknote size={12} />
+      <div className="px-4 pb-4 flex flex-wrap items-center justify-between gap-2">
+        <span className="inline-flex items-center gap-1 whitespace-nowrap bg-[#3498db] text-white font-semibold text-xs px-3 py-1.5 rounded shadow-sm">
+          <Banknote size={12} className="shrink-0" />
           LKR {Number(tool.dailyRate).toFixed(2)}{' '}
           <span className="font-normal opacity-90">{t('toolCard.perDay', '/ day')}</span>
         </span>
-        <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded">
+        <span className="whitespace-nowrap text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded">
           {t('toolCard.inStock', { count: tool.totalQuantity ?? 5, defaultValue: `${tool.totalQuantity ?? 5} in stock` })}
         </span>
       </div>

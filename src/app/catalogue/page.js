@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import ToolCard from '@/components/ToolCard';
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, Package, Loader2 } from 'lucide-react';
 import '@/lib/i18n';
+import { translateCategoryName } from '@/lib/categoryName';
 
 export default function CataloguePage() {
   return (
@@ -42,7 +43,7 @@ function CatalogueContent() {
     setLoading(true);
     const params = new URLSearchParams();
     if (activeCategoryId) params.set('categoryId', activeCategoryId);
-    if (search) params.set('search', search);
+    if (search.trim()) params.set('search', search.trim());
     params.set('sortBy', sortBy);
     params.set('page', page);
 
@@ -86,7 +87,8 @@ function CatalogueContent() {
         <div className="mb-6 relative">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
-            type="text"
+            type="search"
+            aria-label={t('catalogue.searchPlaceholder', 'Search tools, e.g. hedge trimmer...')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('catalogue.searchPlaceholder', 'Search tools, e.g. hedge trimmer...')}
@@ -118,7 +120,7 @@ function CatalogueContent() {
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
                 }`}
               >
-                {cat.name}
+                {translateCategoryName(t, cat.name)}
               </button>
             ))}
           </div>
@@ -127,6 +129,7 @@ function CatalogueContent() {
           <div className="flex items-center gap-2">
             <SlidersHorizontal size={14} className="text-gray-500" />
             <select
+              aria-label="Sort"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 shadow-sm focus:border-[#3498db] focus:outline-none"

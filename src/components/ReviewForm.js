@@ -27,7 +27,17 @@ export default function ReviewForm({ toolId, onSubmitted }) {
 
   if (status === 'loading') return null;
 
-  if (!session || session.user.userType !== 'customer') {
+  if (session && session.user.userType !== 'customer') {
+    return (
+      <div className="rounded-lg bg-gray-50 border border-gray-200 p-4 mb-4 text-center">
+        <p className="text-sm text-gray-600">
+          {t('review.staffCannotReview', "Staff accounts can't write reviews. Sign in with a customer account to leave a review.")}
+        </p>
+      </div>
+    );
+  }
+
+  if (!session) {
     return (
       <div className="rounded-lg bg-gray-50 border border-gray-200 p-4 mb-4 text-center">
         <Link href="/login" className="inline-flex items-center gap-1.5 text-sm font-medium text-[#3498db] hover:underline">

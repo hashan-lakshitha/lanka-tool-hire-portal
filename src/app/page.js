@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import '@/lib/i18n';
+import { translateCategoryName } from '@/lib/categoryName';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -54,7 +55,7 @@ export default function Home() {
               href={`/catalogue?categoryId=${category.id}`}
               className="block rounded-lg bg-white p-6 shadow hover:shadow-md transition-shadow group text-left"
             >
-              <h3 className="text-xl font-bold text-[#34495e] mb-2">{category.name}</h3>
+              <h3 className="text-xl font-bold text-[#34495e] mb-2">{translateCategoryName(t, category.name)}</h3>
               <p className="text-gray-600 text-sm">
                 {t(
                   'home.categoryDesc',

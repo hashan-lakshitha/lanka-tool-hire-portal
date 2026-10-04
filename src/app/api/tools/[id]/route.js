@@ -6,7 +6,9 @@ export async function GET(request, { params }) {
   const { id } = await params;
 
   try {
-    const tool = await Tool.findByPk(id, {
+    // Only active tools are publicly visible; deactivated tools are managed via /api/admin/tools.
+    const tool = await Tool.findOne({
+      where: { id, status: 'active' },
       include: [
         { model: Category, as: 'category' },
         {

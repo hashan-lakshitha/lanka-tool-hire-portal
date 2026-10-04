@@ -219,13 +219,17 @@ export default function HireCalculator({ toolId }) {
               <ShoppingCart size={16} />
               {hiring ? 'Placing Order...' : availability && !availability.isAvailable ? 'Out of Stock for Selected Dates' : t('hireCalculator.reserveBtn', 'Reserve This Tool')}
             </button>
+          ) : session ? (
+            <p className="rounded-md bg-gray-50 border border-gray-200 p-3 text-center text-sm text-gray-600">
+              {t('hireCalculator.staffCannotHire', "Staff accounts can't place hire orders. Sign in with a customer account to hire this tool.")}
+            </p>
           ) : (
             <Link
               href="/login"
               className="w-full flex items-center justify-center gap-2 rounded-md bg-[#34495e] py-3 text-sm font-semibold text-white shadow hover:bg-[#2c3e50] transition-colors"
             >
               <LogIn size={16} />
-              Log in to Hire
+              {t('hireCalculator.loginToHire', 'Log in to Hire')}
             </Link>
           )}
         </div>
