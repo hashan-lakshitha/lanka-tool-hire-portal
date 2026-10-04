@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server';
 import { Category, Tool } from '@/models';
+import { findCategoryByName, CATEGORY_NAME_MAX } from '@/lib/categories';
 
 export async function PATCH(request, { params }) {
   const { id } = await params;
-  const body = await request.json();
-  const { name, parentCategoryId } = body;
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+  const { name, parentCategoryId } = body || {};
 
   try {
     const category = await Category.findByPk(id);
@@ -13,7 +19,19 @@ export async function PATCH(request, { params }) {
     }
 
     const updates = {};
-    if (name !== undefined) updates.name = name.trim();
+    if (name !== undefined) {
+      const trimmed = typeof name === 'string' ? name.trim() : '';
+      if (!trimmed) {
+        return NextResponse.json({ error: 'Category name is required' }, { status: 400 });
+      }
+      if (trimmed.length > CATEGORY_NAME_MAX) {
+        return NextResponse.json({ error: `Category name must be ${CATEGORY_NAME_MAX} characters or fewer` }, { status: 400 });
+      }
+      if (await findCategoryByName(trimmed, category.id)) {
+        return NextResponse.json({ error: 'Category already exists' }, { status: 409 });
+      }
+      updates.name = trimmed;
+    }
     if (parentCategoryId !== undefined) updates.parentCategoryId = parentCategoryId || null;
 
     await category.update(updates);

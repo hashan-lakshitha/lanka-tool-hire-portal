@@ -7,6 +7,14 @@ import { SessionProvider } from 'next-auth/react';
 
 export default function Providers({ children }) {
   useEffect(() => {
+    // Keep <html lang> in sync with the active UI language (screen readers, fonts, SEO).
+    const syncHtmlLang = (lng) => {
+      if (typeof document !== 'undefined' && lng) {
+        document.documentElement.lang = lng.slice(0, 2);
+      }
+    };
+    i18n.on('languageChanged', syncHtmlLang);
+
     try {
       const savedLng = localStorage.getItem('i18nextLng');
       if (savedLng && ['en', 'si', 'ta'].includes(savedLng)) {
@@ -20,6 +28,9 @@ export default function Providers({ children }) {
     } catch {
       // Ignore storage errors
     }
+    syncHtmlLang(i18n.language);
+
+    return () => i18n.off('languageChanged', syncHtmlLang);
   }, []);
 
   return <SessionProvider>{children}</SessionProvider>;

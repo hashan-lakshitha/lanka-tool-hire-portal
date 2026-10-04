@@ -1,4 +1,21 @@
 {
+  "nav": {
+    "catalogue": "Catalogue",
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "register": "Register",
+    "signOut": "Sign Out",
+    "languageSelection": "Language selection"
+  },
+  "categoryNames": {
+    "Building construction equipment": "Building construction equipment",
+    "Cleaning equipment": "Cleaning equipment",
+    "Decorating tools": "Decorating tools",
+    "Landscaping tools": "Landscaping tools",
+    "Electrical and heating tools": "Electrical and heating tools",
+    "Plumbing tools": "Plumbing tools"
+  },
   "home": {
     "heroTitle": "Professional Tool & Equipment Rental",
     "heroSubtitle": "High-quality tools for building, landscaping, cleaning, decorating, and more. Hire hourly, daily, or weekly.",
@@ -61,6 +78,8 @@
     "quoteSaved": "Quote calculated and saved to your history.",
     "viewQuotes": "View in Quotes History →",
     "reserveBtn": "Reserve This Tool",
+    "loginToHire": "Log in to Hire",
+    "staffCannotHire": "Staff accounts can't place hire orders. Sign in with a customer account to hire this tool.",
     "datesRequiredError": "Please select both start and end dates/times.",
     "startPastError": "Start date and time cannot be in the past.",
     "endBeforeStartError": "End date and time must be after start date.",
@@ -69,6 +88,7 @@
   "review": {
     "writeReview": "Write a Review",
     "loginToReview": "Sign in to write a review.",
+    "staffCannotReview": "Staff accounts can't write reviews. Sign in with a customer account to leave a review.",
     "loginLink": "Sign in",
     "submitted": "Thanks! Your review has been submitted and is awaiting moderation.",
     "submitReviewBtn": "Submit Review",

@@ -16,6 +16,8 @@ export default function EquipmentPage() {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [uploading, setUploading] = useState(false);
+  const [formError, setFormError] = useState(null);
+  const [editError, setEditError] = useState(null);
 
   async function uploadImage(file, onDone) {
     if (!file) return;
@@ -53,34 +55,49 @@ export default function EquipmentPage() {
 
   async function createTool(e) {
     e.preventDefault();
-    await fetch('/api/admin/tools', {
+    setFormError(null);
+    const res = await fetch('/api/admin/tools', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newTool),
     });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setFormError(data.error || 'Failed to create tool');
+      return;
+    }
     setNewTool(emptyForm);
     setShowAddForm(false);
     fetchAll();
   }
 
   function startEdit(tool) {
+    setEditError(null);
     setEditingId(tool.id);
     setEditForm({
+      categoryId: tool.categoryId ?? '',
       name: tool.name,
       description: tool.description,
       imageUrl: tool.imageUrl || '',
       hourlyRate: tool.hourlyRate,
       dailyRate: tool.dailyRate,
       weeklyRate: tool.weeklyRate,
+      totalQuantity: tool.totalQuantity ?? 5,
     });
   }
 
   async function saveEdit(id) {
-    await fetch(`/api/admin/tools/${id}`, {
+    setEditError(null);
+    const res = await fetch(`/api/admin/tools/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(editForm),
     });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setEditError(data.error || 'Failed to update tool');
+      return;
+    }
     setEditingId(null);
     fetchAll();
   }
@@ -154,6 +171,7 @@ export default function EquipmentPage() {
               <label className="block text-xs font-medium text-gray-600 mb-1">Tool Name</label>
               <input
                 required
+                maxLength={255}
                 placeholder="e.g. Concrete Mixer 140L"
                 value={newTool.name}
                 onChange={(e) => setNewTool({ ...newTool, name: e.target.value })}
@@ -177,6 +195,7 @@ export default function EquipmentPage() {
           <div className="mb-4">
             <label className="block text-xs font-medium text-gray-600 mb-1">Image URL (or upload)</label>
             <input
+              maxLength={255}
               placeholder="https://..."
               value={newTool.imageUrl}
               onChange={(e) => setNewTool({ ...newTool, imageUrl: e.target.value })}
@@ -199,8 +218,12 @@ export default function EquipmentPage() {
             <RateInput label="Hourly Rate (LKR)" value={newTool.hourlyRate} onChange={(v) => setNewTool({ ...newTool, hourlyRate: v })} />
             <RateInput label="Daily Rate (LKR)" value={newTool.dailyRate} onChange={(v) => setNewTool({ ...newTool, dailyRate: v })} />
             <RateInput label="Weekly Rate (LKR)" value={newTool.weeklyRate} onChange={(v) => setNewTool({ ...newTool, weeklyRate: v })} />
-            <RateInput label="Total Stock Quantity" value={newTool.totalQuantity} onChange={(v) => setNewTool({ ...newTool, totalQuantity: v })} />
+            <RateInput label="Total Stock Quantity" integer value={newTool.totalQuantity} onChange={(v) => setNewTool({ ...newTool, totalQuantity: v })} />
           </div>
+
+          {formError && (
+            <p role="alert" className="mb-4 text-sm font-medium text-rose-600">{formError}</p>
+          )}
 
           <button type="submit" className="rounded-md bg-[#3498db] px-5 py-2 text-sm font-semibold text-white shadow hover:bg-[#2980b9]">
             Create Tool
@@ -221,19 +244,49 @@ export default function EquipmentPage() {
             <div key={tool.id} className="rounded-lg bg-white p-5 shadow-sm border border-gray-200">
               {editingId === tool.id ? (
                 /* Edit Mode */
-                <div className="space-y-3">
-                  <input
-                    value={editForm.name}
-                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                    className={`${inputClass} font-bold`}
-                  />
+                <form
+                  onSubmit={(e) => { e.preventDefault(); saveEdit(tool.id); }}
+                  className="space-y-3"
+                >
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor={`edit-name-${tool.id}`}>Tool Name</label>
+                      <input
+                        id={`edit-name-${tool.id}`}
+                        required
+                        maxLength={255}
+                        value={editForm.name}
+                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                        className={`${inputClass} font-bold`}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1" htmlFor={`edit-category-${tool.id}`}>Category</label>
+                      <select
+                        id={`edit-category-${tool.id}`}
+                        required
+                        value={editForm.categoryId}
+                        onChange={(e) => setEditForm({ ...editForm, categoryId: e.target.value })}
+                        className={inputClass}
+                      >
+                        <option value="">Select category</option>
+                        {categories.map((c) => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                   <textarea
+                    required
+                    aria-label="Description"
                     value={editForm.description}
                     onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                     className={inputClass}
                     rows={2}
                   />
                   <input
+                    maxLength={255}
+                    aria-label="Image URL"
                     placeholder="Image URL"
                     value={editForm.imageUrl}
                     onChange={(e) => setEditForm({ ...editForm, imageUrl: e.target.value })}
@@ -254,17 +307,20 @@ export default function EquipmentPage() {
                     <RateInput label="Hourly (LKR)" value={editForm.hourlyRate} onChange={(v) => setEditForm({ ...editForm, hourlyRate: v })} />
                     <RateInput label="Daily (LKR)" value={editForm.dailyRate} onChange={(v) => setEditForm({ ...editForm, dailyRate: v })} />
                     <RateInput label="Weekly (LKR)" value={editForm.weeklyRate} onChange={(v) => setEditForm({ ...editForm, weeklyRate: v })} />
-                    <RateInput label="Total Stock" value={editForm.totalQuantity} onChange={(v) => setEditForm({ ...editForm, totalQuantity: v })} />
+                    <RateInput label="Total Stock" integer value={editForm.totalQuantity} onChange={(v) => setEditForm({ ...editForm, totalQuantity: v })} />
                   </div>
+                  {editError && (
+                    <p role="alert" className="text-sm font-medium text-rose-600">{editError}</p>
+                  )}
                   <div className="flex gap-2 pt-2">
-                    <button onClick={() => saveEdit(tool.id)} className="rounded-md bg-[#3498db] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#2980b9]">
+                    <button type="submit" className="rounded-md bg-[#3498db] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#2980b9]">
                       Save
                     </button>
-                    <button onClick={() => setEditingId(null)} className="rounded-md bg-gray-200 px-4 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-300">
+                    <button type="button" onClick={() => setEditingId(null)} className="rounded-md bg-gray-200 px-4 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-300">
                       Cancel
                     </button>
                   </div>
-                </div>
+                </form>
               ) : (
                 /* View Mode */
                 <div>
@@ -309,18 +365,20 @@ export default function EquipmentPage() {
   );
 }
 
-function RateInput({ label, value, onChange }) {
+// Rates must be positive money values; stock (integer) must be a whole number >= 0.
+function RateInput({ label, value, onChange, integer = false }) {
   return (
-    <div>
-      <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+    <label className="block">
+      <span className="block text-xs font-medium text-gray-600 mb-1">{label}</span>
       <input
         type="number"
-        step="0.01"
+        min={integer ? 0 : 0.01}
+        step={integer ? 1 : 0.01}
         required
-        value={value}
+        value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-[#3498db] focus:outline-none focus:ring-1 focus:ring-[#3498db]"
       />
-    </div>
+    </label>
   );
 }

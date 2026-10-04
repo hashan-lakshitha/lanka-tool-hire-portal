@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { Rental, Tool, RentalQuote, User } from '@/models';
 import { getToolAvailability } from '@/lib/inventory';
+import { calculateToolCost, parseDate } from '@/lib/pricing';
 
 export async function POST(request) {
   const session = await getServerSession(authOptions);
@@ -18,14 +19,18 @@ export async function POST(request) {
   }
 
   const body = await request.json();
-  const { toolId, startDate, endDate, totalCost, quoteId } = body;
+  const { toolId, startDate, endDate, quoteId } = body;
 
-  if (!toolId || !startDate || !endDate || !totalCost) {
+  if (!toolId || !startDate || !endDate) {
     return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
   }
 
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const start = parseDate(startDate);
+  const end = parseDate(endDate);
+
+  if (!start || !end) {
+    return NextResponse.json({ error: 'Invalid start or end date' }, { status: 400 });
+  }
 
   if (end <= start) {
     return NextResponse.json({ error: 'End date must be after start date' }, { status: 400 });
@@ -33,19 +38,22 @@ export async function POST(request) {
 
   try {
     const tool = await Tool.findByPk(toolId);
-    if (!tool) {
+    if (!tool || tool.status !== 'active') {
       return NextResponse.json({ error: 'Tool not found' }, { status: 404 });
     }
 
-    const availability = await getToolAvailability(toolId, start, end);
+    const availability = await getToolAvailability(tool.id, start, end);
     if (!availability.isAvailable) {
       return NextResponse.json({
         error: `Out of stock for selected dates (${availability.activeOverlaps} of ${availability.totalQuantity} units currently hired).`
       }, { status: 400 });
     }
 
+    // Never trust a client-supplied price - always recompute from the tool's rates.
+    const totalCost = calculateToolCost(tool, start, end).toFixed(2);
+
     const rental = await Rental.create({
-      toolId,
+      toolId: tool.id,
       userId,
       startDate: start,
       endDate: end,

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Category, Tool } from '@/models';
+import { findCategoryByName, CATEGORY_NAME_MAX } from '@/lib/categories';
 
 export async function GET() {
   try {
@@ -21,16 +22,29 @@ export async function GET() {
 }
 
 export async function POST(request) {
-  const body = await request.json();
-  const { name, parentCategoryId } = body;
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+  const { name, parentCategoryId } = body || {};
 
-  if (!name || !name.trim()) {
+  const trimmed = typeof name === 'string' ? name.trim() : '';
+  if (!trimmed) {
     return NextResponse.json({ error: 'Category name is required' }, { status: 400 });
+  }
+  if (trimmed.length > CATEGORY_NAME_MAX) {
+    return NextResponse.json({ error: `Category name must be ${CATEGORY_NAME_MAX} characters or fewer` }, { status: 400 });
   }
 
   try {
+    if (await findCategoryByName(trimmed)) {
+      return NextResponse.json({ error: 'Category already exists' }, { status: 409 });
+    }
+
     const category = await Category.create({
-      name: name.trim(),
+      name: trimmed,
       parentCategoryId: parentCategoryId || null,
     });
     return NextResponse.json(category, { status: 201 });
