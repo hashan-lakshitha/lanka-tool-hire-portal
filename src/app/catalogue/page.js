@@ -34,8 +34,11 @@ function CatalogueContent() {
 
   useEffect(() => {
     fetch('/api/categories')
-      .then((res) => res.json())
-      .then(setCategories)
+      .then(async (res) => {
+        if (!res.ok) throw new Error('Failed to fetch categories');
+        const data = await res.json();
+        setCategories(Array.isArray(data) ? data : []);
+      })
       .catch(() => setCategories([]));
   }, []);
 
